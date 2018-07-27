@@ -1,5 +1,6 @@
 from utils import *
 
+
 def hand_gen():
     """
     Generates every possible opening hand
@@ -72,7 +73,8 @@ def level_1_win_play(x):
     :param int x: SSGs in deck
     :return float:
     """
-    return sum([level_1_hand_odds(i, x) * mull_to_play(i, x) for i in range(8)])
+    return sum(
+        [level_1_hand_odds(i, x) * mull_to_play(i, x) for i in range(8)])
 
 
 def level_1_win_draw(x):
@@ -95,7 +97,8 @@ def level_2_hand_odds_play(n, x):
     :param int x: SSGs in deck
     :return float:
     """
-    return sum([hypogeo(60, n, x, i) * hand_will_win_play(n, x, i) for i in range(n)])
+    return sum(
+        [hypogeo(60, n, x, i) * hand_will_win_play(n, x, i) for i in range(n)])
 
 
 def level_2_win_play(x):
@@ -104,7 +107,9 @@ def level_2_win_play(x):
     :param int x: SSGs in deck
     :return float:
     """
-    return sum([level_2_hand_odds_play(i, x) * mull_to_play(i, x) for i in range(0, 8)])
+    return sum([
+        level_2_hand_odds_play(i, x) * mull_to_play(i, x) for i in range(0, 8)
+    ])
 
 
 def level_2_hand_odds_draw(n, x):
@@ -114,7 +119,8 @@ def level_2_hand_odds_draw(n, x):
     :param int x: SSGs in deck
     :return float:
     """
-    return sum([hypogeo(60, n, x, i) * hand_will_win_draw(n, x, i) for i in range(n)])
+    return sum(
+        [hypogeo(60, n, x, i) * hand_will_win_draw(n, x, i) for i in range(n)])
 
 
 def level_2_win_draw(x):
@@ -123,7 +129,8 @@ def level_2_win_draw(x):
     :param int x: SSGs in deck
     :return float:
     """
-    return sum([mull_to_draw(i, x) * level_2_hand_odds_draw(i, x) for i in range(8)])
+    return sum(
+        [mull_to_draw(i, x) * level_2_hand_odds_draw(i, x) for i in range(8)])
 
 
 @memoize
@@ -143,14 +150,21 @@ def surge_odds(N, x, T, C, topcard=None):
         return 0
     if topcard is not None:
         if topcard == 1:
-            return sum([hypogeo(N - 1, 3, x - 1, 3 - i) *
-                        surge_odds(N - 4, x - (4 - i), T - 1 + i, C + i) for i in range(4)])
+            return sum([
+                hypogeo(N - 1, 3, x - 1, 3 - i) * surge_odds(
+                    N - 4, x - (4 - i), T - 1 + i, C + i) for i in range(4)
+            ])
         if topcard == 0:
-            return sum([hypogeo(N - 1, 3, x, 3 - i) *
-                        surge_odds(N - 4, x - (3 - i), T - 1 + i, C + i + 1) for i in range(4)])
+            return sum([
+                hypogeo(N - 1, 3, x, 3 - i) * surge_odds(
+                    N - 4, x - (3 - i), T - 1 + i, C + i + 1) for i in range(4)
+            ])
     else:
-        return sum([hypogeo(N, 4, x, 4 - i) *
-                surge_odds(N - 4, x - (4 - i), T - 1 + i, C + i) for i in range(5)])
+        return sum([
+            hypogeo(N, 4, x, 4 - i) * surge_odds(N - 4, x -
+                                                 (4 - i), T - 1 + i, C + i)
+            for i in range(5)
+        ])
 
 
 def keep_on_top(n, x, k, topcard, N=60):
@@ -163,7 +177,8 @@ def keep_on_top(n, x, k, topcard, N=60):
     :param int N: Cards in deck, 60 by default
     :return float:
     """
-    return surge_odds(N - n, x - k, plays_in_hand(n, k), plays_in_hand(n, k), topcard)
+    return surge_odds(N - n, x - k, plays_in_hand(n, k), plays_in_hand(n, k),
+                      topcard)
 
 
 def push_to_bottom(n, x, k, topcard, N=60):
@@ -176,7 +191,8 @@ def push_to_bottom(n, x, k, topcard, N=60):
     :param int N: Cards in deck, 60 by default
     :return float:
     """
-    return surge_odds(N - 1 - n, x - topcard - k, plays_in_hand(n, k), plays_in_hand(n, k))
+    return surge_odds(N - 1 - n, x - topcard - k, plays_in_hand(n, k),
+                      plays_in_hand(n, k))
 
 
 def hand_will_win_play(n, x, k, scry=True, N=60):
@@ -191,12 +207,10 @@ def hand_will_win_play(n, x, k, scry=True, N=60):
     """
     if n < 7 and scry:
         retval = 0
-        retval += (hypogeo(N - n, 1, x - k, 1) *
-                   max(keep_on_top(n, x, k, 1, N),
-                       push_to_bottom(n, x, k, 1, N)))
-        retval += (hypogeo(N - n, 1, x - k, 0) *
-                   max(keep_on_top(n, x, k, 0),
-                       push_to_bottom(n, x, k, 0, N)))
+        retval += (hypogeo(N - n, 1, x - k, 1) * max(
+            keep_on_top(n, x, k, 1, N), push_to_bottom(n, x, k, 1, N)))
+        retval += (hypogeo(N - n, 1, x - k, 0) * max(
+            keep_on_top(n, x, k, 0), push_to_bottom(n, x, k, 0, N)))
         return retval
     else:
         return keep_on_top(n, x, k, None, N)
@@ -212,8 +226,10 @@ def hand_will_win_play_scry_bottom(n, x, k, N=60):
     :return float:
     """
     retval = 0
-    retval += hypogeo(N - n, 1, x - k, 1) * hand_will_win_play(n + 1, x - 1, k + 1, False, N)
-    retval += hypogeo(N - n, 1, x - k, 0) * hand_will_win_play(n + 1, x, k, False, N)
+    retval += hypogeo(N - n, 1, x - k, 1) * hand_will_win_play(
+        n + 1, x - 1, k + 1, False, N)
+    retval += hypogeo(N - n, 1, x - k, 0) * hand_will_win_play(
+        n + 1, x, k, False, N)
     return retval
 
 
@@ -229,17 +245,24 @@ def hand_will_win_draw(n, x, k, N=60):
     if n < 7:
         retval = 0
         # First we assume card a is on top
-        retval += (hypogeo(N - n, 1, x - k, 1) *
-                   max(hand_will_win_play(n + 1, x - k, k + 1, False),  # probability if kept on top
-                       hand_will_win_play_scry_bottom(n, x - 1, k, 59)))  # probability if put on bottom
+        retval += (
+            hypogeo(N - n, 1, x - k, 1) * max(
+                hand_will_win_play(n + 1, x - k, k + 1,
+                                   False),  # probability if kept on top
+                hand_will_win_play_scry_bottom(n, x - 1, k, 59))
+        )  # probability if put on bottom
         # Next we assume card b is top
-        retval += (hypogeo(N - n, 1, x - k, 0) *
-                   max(hand_will_win_play(n + 1, x, k, False),  # probability if kept on top
-                       hand_will_win_play_scry_bottom(n, x, k, 59)))  # probability if put on bottom
+        retval += (
+            hypogeo(N - n, 1, x - k, 0) * max(
+                hand_will_win_play(n + 1, x, k,
+                                   False),  # probability if kept on top
+                hand_will_win_play_scry_bottom(n, x, k, 59))
+        )  # probability if put on bottom
         return retval
     else:
-        return (hypogeo(N - n, 1, x - k, 0) * hand_will_win_play(n + 1, x, k) +
-                hypogeo(N - n, 1, x - k, 1) * hand_will_win_play(n + 1, x, k + 1))
+        return (
+            hypogeo(N - n, 1, x - k, 0) * hand_will_win_play(n + 1, x, k) +
+            hypogeo(N - n, 1, x - k, 1) * hand_will_win_play(n + 1, x, k + 1))
 
 
 @memoize
@@ -251,7 +274,10 @@ def level_3_mull_odds_play(n, x, k):
     :param int k: SSGs in hand
     :return float:
     """
-    return sum([level_3_hand_odds_play(n - 1, x, i) * hypogeo(60, n - 1, x, i) for i in range(0, n)])
+    return sum([
+        level_3_hand_odds_play(n - 1, x, i) * hypogeo(60, n - 1, x, i)
+        for i in range(0, n)
+    ])
 
 
 @memoize
@@ -278,7 +304,10 @@ def level_3_mull_odds_draw(n, x, k):
     :param int k: SSGs in hand
     :return float:
     """
-    return sum([level_3_hand_odds_draw(n - 1, x, i) * hypogeo(60, n - 1, x, i) for i in range(n)])
+    return sum([
+        level_3_hand_odds_draw(n - 1, x, i) * hypogeo(60, n - 1, x, i)
+        for i in range(n)
+    ])
 
 
 @memoize
@@ -302,7 +331,10 @@ def level_3_win_play(x):
     :param int x: SSGs in deck
     :return float:
     """
-    return sum([level_3_hand_odds_play(7, x, k) * hypogeo(60, 7, x, k) for k in range(8)])
+    return sum([
+        level_3_hand_odds_play(7, x, k) * hypogeo(60, 7, x, k)
+        for k in range(8)
+    ])
 
 
 def level_3_win_draw(x):
@@ -311,7 +343,10 @@ def level_3_win_draw(x):
     :param int x: SSGs in deck
     :return float:
     """
-    return sum([level_3_hand_odds_draw(7, x, k) * hypogeo(60, 7, x, k) for k in range(8)])
+    return sum([
+        level_3_hand_odds_draw(7, x, k) * hypogeo(60, 7, x, k)
+        for k in range(8)
+    ])
 
 
 def best_choice(func):
@@ -366,11 +401,15 @@ def should_i_keep_draw(n, x, k):
     if hand_will_win_play(n, x, k, False) >= level_3_mull_odds_play(n, x, k):
         retval += ['keep']
         if n < 7:
-            if hand_will_win_play(n + 1, x - k, k + 1, False) >= hand_will_win_play_scry_bottom(n, x - 1, k, 59):
+            if hand_will_win_play(n + 1, x - k, k + 1,
+                                  False) >= hand_will_win_play_scry_bottom(
+                                      n, x - 1, k, 59):
                 retval += ['top']
             else:
                 retval += ['bottom']
-            if hand_will_win_play(n + 1, x, k, False) >= hand_will_win_play_scry_bottom(n, x, k, 59):
+            if hand_will_win_play(n + 1, x, k,
+                                  False) >= hand_will_win_play_scry_bottom(
+                                      n, x, k, 59):
                 retval += ['top']
             else:
                 retval += ['bottom']

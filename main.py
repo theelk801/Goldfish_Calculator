@@ -15,8 +15,10 @@ if __name__ == '__main__':
         else:
             chance = level_3_hand_odds_play(n, 23, k)
         print(advice)
-        print('You currently have a ' + str(round(chance * 100, 2)) + '% chance of winning.')
-        try_again = str(input('Would you like to evaluate another hand? (y or n): '))
+        print('You currently have a ' + str(round(chance * 100, 2)) +
+              '% chance of winning.')
+        try_again = str(
+            input('Would you like to evaluate another hand? (y or n): '))
         flag = (try_again != 'n')
         # if advice[82] == 'k':
         #     flag = False

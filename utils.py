@@ -5,6 +5,7 @@ def memoize(f):
     """
     Memoization decorator for functions taking one or more arguments.
     """
+
     class memodict(dict):
         def __init__(self, f):
             self.f = f
@@ -46,4 +47,5 @@ def hypogeo(N, n, K, k):
     """
     if n > N:
         return 0
-    return (binomial_coeff(K, k) * binomial_coeff(N - K, n - k)) / binomial_coeff(N, n)
+    return (binomial_coeff(K, k) * binomial_coeff(
+        N - K, n - k)) / binomial_coeff(N, n)
